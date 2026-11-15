@@ -58,6 +58,10 @@ namespace rp { namespace deps { namespace libusbx_wrap {
             return transferBuffer_;
         }
         
+        void setTimeout(unsigned int timeoutMs) {
+            handle_->timeout = timeoutMs;
+        }
+
         void submit() {
             if (!handle_->user_data) {
                 handle_->user_data = new weak_ptr<TransferImpl>(shared_from_this());
@@ -150,6 +154,10 @@ namespace rp { namespace deps { namespace libusbx_wrap {
         return impl_->getTransferBuffer();
     }
     
+    void Transfer::setTimeout(unsigned int timeoutMs) {
+        impl_->setTimeout(timeoutMs);
+    }
+
     void Transfer::submit() {
         impl_->submit();
     }

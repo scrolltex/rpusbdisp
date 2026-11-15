@@ -35,6 +35,8 @@ namespace rp { namespace deps { namespace libusbx_wrap {
         void setTransferBuffer(std::shared_ptr<rp::util::Buffer> buffer);
         std::shared_ptr<rp::util::Buffer> getTransferBuffer();
         
+        // Timeout for the next submit(), in milliseconds; 0 waits forever (default).
+        void setTimeout(unsigned int timeoutMs);
         void submit();
         void waitForCompletion();
         TransferStatus getStatus();

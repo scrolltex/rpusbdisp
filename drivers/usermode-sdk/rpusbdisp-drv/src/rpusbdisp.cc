@@ -30,6 +30,9 @@
 #define RP_USB_DISPLAY_WIDTH 320
 #define RP_USB_DISPLAY_HEIGHT 240
 
+#define RP_USB_DISPLAY_TRANSFER_TIMEOUT_MS 1000u
+#define RP_USB_DISPLAY_STATUS_POLL_MS 500u
+
 #define RP_USB_DISPLAY_MIN_VERSION_FILL 0x0104u
 #define RP_USB_DISPLAY_MIN_VERSION_BITBLT_RLE 0x0104u
 #define RP_USB_DISPLAY_MIN_VERSION_COPY_AREA_BUG_FIX 0x0104u
@@ -81,6 +84,7 @@ namespace rp { namespace drivers { namespace display {
         shared_ptr<Transfer> sendDataToDisplayEndpointNoWait(shared_ptr<Buffer> buffer) {
             shared_ptr<Transfer> transfer = device_->allocTransfer(EndpointDirectionOut, EndpointTransferTypeBulk, 0x01);
             transfer->setTransferBuffer(buffer);
+            transfer->setTimeout(RP_USB_DISPLAY_TRANSFER_TIMEOUT_MS);
             
             shared_ptr<Pipeline> pipeline = Context::defaultContext()->summonPipeline();
             pipeline->start();
@@ -151,6 +155,7 @@ namespace rp { namespace drivers { namespace display {
             
             shared_ptr<Transfer> transfer = device_->allocTransfer(EndpointDirectionOut, EndpointTransferTypeBulk, RoboPeakUsbDisplayDevice::UsbDeviceDisplayEndpoint);
             transfer->setTransferBuffer(transferBuffer);
+            transfer->setTimeout(RP_USB_DISPLAY_TRANSFER_TIMEOUT_MS);
             transfer->submit();
             
             transfer->waitForCompletion();
@@ -296,6 +301,9 @@ namespace rp { namespace drivers { namespace display {
         void statusFetchingWorker_() {
             shared_ptr<Transfer> transfer = device_->allocTransfer(EndpointDirectionIn, EndpointTransferTypeInterrupt, RoboPeakUsbDisplayDevice::UsbDeviceStatusEndpoint);
             transfer->setTransferBuffer(shared_ptr<Buffer>(new Buffer(32)));
+            // Bounded wait so the destructor can join this thread promptly even
+            // when the device sends no status packets.
+            transfer->setTimeout(RP_USB_DISPLAY_STATUS_POLL_MS);
 
             while (working_.load()) {
                 try {
@@ -325,11 +333,23 @@ namespace rp { namespace drivers { namespace display {
                         }
                         break;
                     }
+                    case rp::deps::libusbx_wrap::TransferStatusTimeout:
+                        break;  // no status update in this period
                     case rp::deps::libusbx_wrap::TransferStatusStall:
-                        device_->clearEndpointHalt(RoboPeakUsbDisplayDevice::UsbDeviceStatusEndpoint);
+                        try {
+                            device_->clearEndpointHalt(RoboPeakUsbDisplayDevice::UsbDeviceStatusEndpoint);
+                        } catch (Exception& exp) {
+                            exp.printToConsole();
+                            working_.store(false);
+                        }
+                        break;
+                    case rp::deps::libusbx_wrap::TransferStatusDeviceError:
+                    case rp::deps::libusbx_wrap::TransferStatusError:
+                    case rp::deps::libusbx_wrap::TransferStatusCancelled:
+                        working_.store(false);  // device is gone; isAlive() turns false
                         break;
                     default:
-                        fprintf(stderr, "Unexpcected status: 0x%08X\n", (int)transfer->getStatus());
+                        fprintf(stderr, "Unexpected status: 0x%08X\n", (int)transfer->getStatus());
                         break;
                 }
             }

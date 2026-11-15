@@ -21,7 +21,12 @@ namespace rp { namespace deps { namespace libusbx_wrap {
         }
         
         ~InterfaceScopeImpl() {
-            deviceHandle_->releaseInterface(interface_);
+            // Must not throw: after an unplug libusb returns LIBUSB_ERROR_NO_DEVICE
+            // here, and an exception escaping a destructor calls std::terminate.
+            try {
+                deviceHandle_->releaseInterface(interface_);
+            } catch (...) {
+            }
         }
         
     private:
