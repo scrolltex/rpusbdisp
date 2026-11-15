@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 RoboPeak.com. All rights reserved.
 //
 
+#include <stdint.h>
+#include <stddef.h>
 #include <rp/deps/libusbx_wrap/device_handle.h>
 #include <rp/deps/libusbx_wrap/device.h>
 #include <rp/deps/libusbx_wrap/transfer.h>

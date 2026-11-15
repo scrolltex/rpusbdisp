@@ -6,6 +6,14 @@
 //  Copyright (c) 2013 RoboPeak.com. All rights reserved.
 //
 
+#include <stdint.h>
+#include <stddef.h>
+#include <functional>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
 #include <rp/infra_config.h>
 #include <memory>
 #include <vector>

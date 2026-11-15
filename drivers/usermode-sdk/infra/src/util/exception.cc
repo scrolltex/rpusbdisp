@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 RoboPeak.com. All rights reserved.
 //
 
+#include <stdio.h>
 #include <rp/infra_config.h>
 #include <rp/util/exception.h>
 

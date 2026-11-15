@@ -8,6 +8,9 @@
 
 #pragma once
 
+#include <stdint.h>
+#include <stddef.h>
+
 #include <rp/infra_config.h>
 #include <rp/util/int_types.h>
 

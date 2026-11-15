@@ -2,3 +2,10 @@ Win32
 Release
 Debug
 *.ipch
+
+# configure output
+/Makefile
+/Makefile.conf
+/config.status
+/config.log
+/build/

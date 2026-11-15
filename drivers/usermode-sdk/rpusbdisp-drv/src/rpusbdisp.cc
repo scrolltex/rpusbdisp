@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 RoboPeak.com. All rights reserved.
 //
 
+#include <stdint.h>
+#include <stddef.h>
 #include <rp/drivers/display/rpusbdisp/rpusbdisp.h>
 #include <rp/deps/libusbx_wrap/libusbx_wrap.h>
 #include <rp/drivers/display/rpusbdisp/rle.h>
@@ -13,6 +15,11 @@
 #include <rp/util/buffer.h>
 #include <stdio.h>
 #include <memory.h>
+#include <functional>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <atomic>
 
 #define RP_USB_DISPLAY_VID    0xFCCFu
 #define RP_USB_DISPLAY_PID    0xA001u

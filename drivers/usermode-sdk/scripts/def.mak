@@ -47,13 +47,21 @@ CDEFS+= -DTARGET_$(ARCH_PLATFORM)
 
 
 
+# libusb-1.0 (system package libusb-1.0-0-dev puts libusb.h into <prefix>/include/libusb-1.0)
+LIBUSB_CFLAGS?=$(shell pkg-config --cflags libusb-1.0 2>/dev/null)
+ifeq ($(strip $(LIBUSB_CFLAGS)),)
+LIBUSB_CFLAGS:=-I/usr/include/libusb-1.0 -I/usr/local/include/libusb-1.0
+endif
+LIBUSB_LIBS?=$(shell pkg-config --libs libusb-1.0 2>/dev/null || echo -lusb-1.0)
+
 # Dependencies
 INCLUDES+= -I. \
 	   -I$(PRJ_ABS_ROOT) \
 	   -I$(PRJ_ABS_ROOT)/infra/include \
 	   -I$(PRJ_ABS_ROOT)/rpusbdisp-drv/include \
 	   -I$(PRJ_ABS_ROOT)/deps-wraps/libusbx_wrap/include \
-	   -I$(PREFIX)/include
+	   -I$(PREFIX)/include \
+	   $(LIBUSB_CFLAGS)
 
 RPUSBDISP_LIBS:=-L$(OUTPUT_ROOT) -lrpusbdisp-drv
 
@@ -62,7 +70,7 @@ DEP_LIBS+=  -L$(PREFIX)/lib -lm \
 	    -lpthread \
 	    -lstdc++ \
 	    -lrt \
-	    -lusb-1.0
+	    $(LIBUSB_LIBS)
 
 
 

@@ -8,6 +8,9 @@
 
 #pragma once
 
+#include <stdint.h>
+#include <stddef.h>
+
 /*! \mainpage RoboPeak Mini USB Display Usermode SDK
  *
  * \section intro Introduction

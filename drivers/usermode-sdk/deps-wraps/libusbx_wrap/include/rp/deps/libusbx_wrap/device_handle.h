@@ -8,6 +8,9 @@
 
 #pragma once
 
+#include <stdint.h>
+#include <stddef.h>
+
 #include <string>
 #include <memory>
 #include <rp/util/noncopyable.h>

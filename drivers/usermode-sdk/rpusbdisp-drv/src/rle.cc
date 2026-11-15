@@ -13,6 +13,8 @@
  */
 
 
+#include <stdint.h>
+#include <stddef.h>
 #include <rp/drivers/display/rpusbdisp/rle.h>
 #include <rp/util/int_types.h>
 #include <rp/util/buffer.h>
